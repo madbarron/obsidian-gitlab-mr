@@ -1,0 +1,26 @@
+{
+  "name": "obsidian-gitlab-mr",
+  "version": "0.1.0",
+  "description": "Obsidian plugin that renders GitLab merge request links as inline status chips.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc --noEmit --skipLibCheck && node esbuild.config.mjs production",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "probe": "node scripts/probe.mjs"
+  },
+  "devDependencies": {
+    "@codemirror/language": "^6.10.2",
+    "@codemirror/state": "6.5.0",
+    "@codemirror/view": "6.38.6",
+    "@types/node": "^22.5.0",
+    "builtin-modules": "^4.0.0",
+    "esbuild": "^0.23.0",
+    "jsdom": "^29.1.1",
+    "obsidian": "^1.6.6",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}

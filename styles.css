@@ -1,0 +1,390 @@
+/* GitLab MR — inline merge request chips.
+   Colors are GitLab's own Pajamas palette: the -500 shades in light mode and the -400
+   shades in dark, which is exactly what GitLab itself does. Structural colors (borders,
+   backgrounds, body text) still come from Obsidian theme variables so the chip sits
+   correctly in any theme. */
+
+.gl-mr-chip {
+	--gl-green: #108548;
+	--gl-blue: #1f75cb;
+	--gl-red: #dd2b0e;
+	--gl-orange: #ab6100;
+	--gl-gray: #737278;
+	--gl-green-hover: #24663b;
+
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	max-width: 100%;
+	padding: 0.05em 0.4em;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m, 6px);
+	background-color: var(--background-secondary);
+	font-size: 0.88em;
+	line-height: 1.5;
+	vertical-align: baseline;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.theme-dark .gl-mr-chip {
+	--gl-green: #2da160;
+	--gl-blue: #428fdc;
+	--gl-red: #ec5941;
+	--gl-orange: #c17d10;
+	--gl-gray: #89888d;
+	--gl-green-hover: #37a866;
+}
+
+.gl-mr-chip .gl-mr-main {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	min-width: 0;
+	color: var(--text-normal);
+	text-decoration: none !important;
+	cursor: pointer;
+}
+
+.gl-mr-chip .gl-mr-main:hover .gl-mr-title,
+.gl-mr-chip .gl-mr-main:hover .gl-mr-ref {
+	text-decoration: underline;
+}
+
+/* Status pill */
+.gl-mr-status {
+	flex: 0 0 auto;
+	padding: 0 0.4em;
+	border-radius: var(--radius-s, 4px);
+	font-weight: 600;
+	font-size: 0.92em;
+	color: var(--text-muted);
+	background-color: var(--background-modifier-hover);
+}
+
+.gl-mr-state-opened .gl-mr-status {
+	color: var(--gl-green);
+	background-color: color-mix(in srgb, var(--gl-green) 15%, transparent);
+}
+
+/* GitLab's merged badge is blue, not purple. */
+.gl-mr-state-merged .gl-mr-status {
+	color: var(--gl-blue);
+	background-color: color-mix(in srgb, var(--gl-blue) 15%, transparent);
+}
+
+.gl-mr-state-closed .gl-mr-status {
+	color: var(--gl-red);
+	background-color: color-mix(in srgb, var(--gl-red) 15%, transparent);
+}
+
+.gl-mr-state-draft .gl-mr-status,
+.gl-mr-state-locked .gl-mr-status {
+	color: var(--gl-gray);
+	background-color: color-mix(in srgb, var(--gl-gray) 15%, transparent);
+}
+
+/* Author initials — a pill, so it never reads as a review state */
+.gl-mr-author {
+	flex: 0 0 auto;
+	padding: 0 0.35em;
+	border: 1px solid color-mix(in srgb, var(--gl-gray) 45%, transparent);
+	border-radius: var(--radius-s, 4px);
+	font-size: 0.8em;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: var(--gl-gray);
+}
+
+/* Project/iid and title */
+.gl-mr-ref {
+	flex: 0 0 auto;
+	font-family: var(--font-monospace);
+	font-size: 0.9em;
+	color: var(--text-muted);
+}
+
+.gl-mr-title {
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: 46ch;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--text-normal);
+}
+
+/* Unresolved threads */
+.gl-mr-threads {
+	flex: 0 0 auto;
+	color: var(--gl-orange);
+	font-variant-numeric: tabular-nums;
+	font-weight: 600;
+}
+
+/* Pipeline — a CSS dot rather than an emoji, so the color is GitLab's real one */
+.gl-mr-pipeline {
+	display: inline-flex;
+	align-items: center;
+	flex: 0 0 auto;
+	text-decoration: none !important;
+	line-height: 1;
+	cursor: pointer;
+	padding: 0 0.1em;
+}
+
+.gl-mr-dot {
+	display: inline-block;
+	width: 0.62em;
+	height: 0.62em;
+	border-radius: 50%;
+	background-color: var(--gl-gray);
+}
+
+.gl-mr-pipeline:hover .gl-mr-dot {
+	transform: scale(1.25);
+}
+
+.gl-mr-dot-passed {
+	background-color: var(--gl-green);
+}
+
+.gl-mr-dot-failed {
+	background-color: var(--gl-red);
+}
+
+.gl-mr-dot-running {
+	background-color: var(--gl-blue);
+	animation: gl-mr-ring 1.6s ease-out infinite;
+}
+
+/* GitLab treats pending/created as "attention needed" orange, not yellow. */
+.gl-mr-dot-waiting {
+	background-color: var(--gl-orange);
+	animation: gl-mr-pulse 2.6s ease-in-out infinite;
+}
+
+/* Manual jobs are waiting on a person: hollow ring. */
+.gl-mr-dot-paused {
+	background-color: transparent;
+	box-shadow: inset 0 0 0 2px var(--gl-gray);
+}
+
+.gl-mr-dot-canceled {
+	background-color: var(--gl-gray);
+	opacity: 0.6;
+}
+
+.gl-mr-dot-skipped {
+	background-color: transparent;
+	border: 1px dashed var(--gl-gray);
+}
+
+.gl-mr-dot-unknown {
+	background-color: transparent;
+	box-shadow: inset 0 0 0 1px var(--gl-gray);
+}
+
+/* Reviewers */
+.gl-mr-reviewers {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+	flex: 0 0 auto;
+}
+
+.gl-mr-reviewer {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.1em;
+}
+
+.gl-mr-reviewer .gl-mr-glyph {
+	font-size: 0.85em;
+	line-height: 1;
+}
+
+.gl-mr-initials {
+	font-size: 0.8em;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: var(--text-muted);
+}
+
+.gl-mr-initials {
+	color: var(--gl-gray);
+}
+
+.gl-mr-rev-approved .gl-mr-initials {
+	color: var(--gl-green);
+}
+
+.gl-mr-rev-changes .gl-mr-initials {
+	color: var(--gl-red);
+}
+
+.gl-mr-rev-reviewed .gl-mr-initials,
+.gl-mr-rev-started .gl-mr-initials {
+	color: var(--gl-blue);
+}
+
+.gl-mr-rev-unreviewed {
+	opacity: 0.75;
+}
+
+/* Merge button — GitLab's confirm-action green */
+.gl-mr-merge {
+	flex: 0 0 auto;
+	height: auto;
+	margin: 0;
+	padding: 0.05em 0.5em;
+	border: none;
+	border-radius: var(--radius-s, 4px);
+	background-color: var(--gl-green);
+	color: #fff;
+	font-size: 0.82em;
+	font-weight: 600;
+	line-height: 1.5;
+	cursor: pointer;
+	box-shadow: none;
+}
+
+.gl-mr-merge:hover {
+	background-color: var(--gl-green-hover);
+	color: #fff;
+}
+
+.gl-mr-merge:focus-visible {
+	outline: 2px solid var(--gl-green);
+	outline-offset: 1px;
+}
+
+/* Loading and error states share the chip shell so nothing shifts when data lands. */
+.gl-mr-loading {
+	opacity: 0.7;
+}
+
+.gl-mr-skeleton {
+	animation: gl-mr-pulse 1.4s ease-in-out infinite;
+	letter-spacing: 0.1em;
+}
+
+.gl-mr-error .gl-mr-main {
+	cursor: pointer;
+}
+
+.gl-mr-error .gl-mr-status {
+	color: var(--text-muted);
+	background-color: var(--background-modifier-border);
+}
+
+.gl-mr-error-unauthorized .gl-mr-status,
+.gl-mr-error-no-token .gl-mr-status {
+	color: var(--gl-orange);
+	background-color: color-mix(in srgb, var(--gl-orange) 15%, transparent);
+}
+
+.gl-mr-error-not-found .gl-mr-status,
+.gl-mr-error-server .gl-mr-status,
+.gl-mr-error-graphql .gl-mr-status {
+	color: var(--gl-red);
+	background-color: color-mix(in srgb, var(--gl-red) 15%, transparent);
+}
+
+@keyframes gl-mr-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.45;
+	}
+}
+
+/* Expanding ring, so a running pipeline reads as active without moving the layout. */
+@keyframes gl-mr-ring {
+	0% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--gl-blue) 60%, transparent);
+	}
+	70% {
+		box-shadow: 0 0 0 0.35em transparent;
+	}
+	100% {
+		box-shadow: 0 0 0 0 transparent;
+	}
+}
+
+/* Live Preview: keep the widget from inheriting editor text decorations. */
+.cm-line .gl-mr-chip {
+	text-decoration: none;
+}
+
+/* Merge confirmation modal */
+.gl-mr-modal-title {
+	margin: 0 0 0.3em;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.gl-mr-modal-branches {
+	margin: 0 0 1em;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.gl-mr-modal-branch {
+	padding: 0 0.3em;
+	border-radius: var(--radius-s, 4px);
+	background-color: var(--background-modifier-hover);
+	font-family: var(--font-monospace);
+}
+
+.gl-mr-modal-error {
+	margin: 0.5em 0 0;
+	padding: 0.6em 0.8em;
+	border-left: 3px solid #dd2b0e;
+	border-radius: var(--radius-s, 4px);
+	background-color: var(--background-secondary);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+}
+
+/* Settings tab */
+.gl-mr-settings-help {
+	margin: 0 0 1em;
+	padding: 0.75em 1em;
+	border-left: 3px solid var(--interactive-accent);
+	border-radius: var(--radius-s, 4px);
+	background-color: var(--background-secondary);
+	font-size: var(--font-ui-small);
+	color: var(--text-muted);
+}
+
+.gl-mr-settings-help p {
+	margin: 0 0 0.4em;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.gl-mr-settings-help ol {
+	margin: 0;
+	padding-left: 1.4em;
+}
+
+.gl-mr-settings-help li {
+	margin-bottom: 0.35em;
+	word-break: break-word;
+}
+
+.gl-mr-settings-result {
+	margin: 0 0 1em;
+	font-size: var(--font-ui-small);
+}
+
+.gl-mr-settings-result.gl-mr-ok {
+	color: var(--color-green);
+}
+
+.gl-mr-settings-result.gl-mr-bad {
+	color: var(--color-red);
+}
