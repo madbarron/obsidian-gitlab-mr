@@ -1,6 +1,6 @@
 {
   "name": "obsidian-gitlab-mr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Obsidian plugin that renders GitLab merge request links as inline status chips.",
   "main": "main.js",
   "private": true,
