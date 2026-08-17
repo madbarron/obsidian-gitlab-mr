@@ -164,7 +164,9 @@ Other scripts:
 ### Releasing
 
 ```bash
-npm version patch && git push --follow-tags
+npm version patch
+git push
+git push --tags
 ```
 
 `npm version` runs `version-bump.mjs`, which copies the new version into `manifest.json` and
