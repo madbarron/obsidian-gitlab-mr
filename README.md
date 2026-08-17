@@ -116,6 +116,19 @@ OBSIDIAN_VAULT=Obsidian/MyVault
 Set `OBSIDIAN_PLUGIN_DIR` instead to name the plugin folder outright; it takes precedence, and
 both accept `~`.
 
+### Dependency notes
+
+`@codemirror/state` and `@codemirror/view` are pinned to exact versions on purpose, and
+`npm outdated` will always report them as behind. `obsidian` peer-depends on those exact
+versions, and Obsidian ships its own CodeMirror at runtime — the build marks them `external`,
+so nothing from `node_modules` is bundled. They exist here only to type-check against the
+same CodeMirror the host actually provides. Bumping them past the peer range breaks
+`npm install` and lets code compile against APIs your Obsidian does not have; the way to move
+them is to upgrade `obsidian` and follow its peers.
+
+`@types/node` tracks the Node major you run (24), not the newest published types, so the build
+scripts cannot compile against APIs that are missing at runtime.
+
 Other scripts:
 
 - `npm run build` — typecheck, then a minified build into the same folder
