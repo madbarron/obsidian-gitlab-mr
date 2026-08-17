@@ -1,0 +1,49 @@
+# Publishes the release BRAT installs from.
+#
+# To cut a release:  npm version patch && git push --follow-tags
+
+name: Release
+
+on:
+  push:
+    tags: ["*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          OBSIDIAN_PLUGIN_DIR: dist
+
+      # The tag is what BRAT and Obsidian resolve a version by, so a manifest that disagrees
+      # with it ships an update clients refuse.
+      - name: Check the manifest matches the tag
+        run: |
+          manifest_version="$(node -p "require('./dist/manifest.json').version")"
+          if [ "$manifest_version" != "$GITHUB_REF_NAME" ]; then
+            echo "manifest.json says $manifest_version but the tag is $GITHUB_REF_NAME." >&2
+            echo "Bump with 'npm version <patch|minor|major>' so both move together." >&2
+            exit 1
+          fi
+
+      # BRAT downloads these three by name. They must be individual assets, never a zip.
+      - name: Create the release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            dist/main.js dist/manifest.json dist/styles.css \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes

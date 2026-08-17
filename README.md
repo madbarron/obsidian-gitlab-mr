@@ -14,6 +14,31 @@ pipeline · per-reviewer approval · merge button (only on your own ready MRs)
 Colors are GitLab's own Pajamas palette, using the `-500` shades in light mode and the
 `-400` shades in dark, so a chip reads like the badge on the MR page.
 
+## Install
+
+Use [BRAT](https://github.com/TfTHacker/obsidian42-brat). It installs a plugin straight
+from a GitHub release and re-checks for a newer one every time Obsidian starts.
+
+1. **Settings → Community plugins** — turn Restricted mode off if it is on, then **Browse**,
+   search for **BRAT**, and install and enable it.
+2. Open the command palette and run **BRAT: Add a beta plugin for testing**.
+3. Paste `madbarron/obsidian-gitlab-mr` and confirm.
+4. Back under **Community plugins**, enable **GitLab MR**.
+5. Open its settings, set **Base URL** to your GitLab instance (it defaults to
+   `https://gitlab.com`), paste a token — see [Creating the token](#creating-the-token) — and
+   press **Test connection**.
+
+<details>
+<summary>Manual install, without BRAT</summary>
+
+Download `main.js`, `manifest.json` and `styles.css` from the
+[latest release](https://github.com/madbarron/obsidian-gitlab-mr/releases/latest) into
+`<vault>/.obsidian/plugins/obsidian-gitlab-mr/`, then reload Obsidian and enable the plugin
+under Community plugins. You have to repeat this by hand for every update, which is the
+reason BRAT is worth the one-time install.
+
+</details>
+
 ## Link syntaxes
 
 | You write                                                   | Resolves to                                                             |
@@ -88,7 +113,7 @@ Click a chip to open the merge request. **Shift+click** forces a refresh. There 
    `api` is ever needed.
 4. Paste it into the plugin settings and press **Test connection**. It reports the username and
    the token's scopes, e.g. `✓ connected as guybrush — token scope: read_api (merge button
-   hidden — needs the api scope)`.
+hidden — needs the api scope)`.
 
 The plugin checks its own token's scopes via `GET /api/v4/personal_access_tokens/self` — the
 only REST call it makes — and treats anything it cannot confirm as read-only.
@@ -135,6 +160,22 @@ Other scripts:
 - `npm test` — unit tests for the parser, the formatters and the chip DOM
 - `npm run probe -- my-project 231` — hit the real API outside Obsidian to validate a
   token or a path (reads `GITLAB_TOKEN`, `GITLAB_BASE_URL`, `GITLAB_GROUP_BASE` from `.env`)
+
+### Releasing
+
+```bash
+npm version patch && git push --follow-tags
+```
+
+`npm version` runs `version-bump.mjs`, which copies the new version into `manifest.json` and
+records `version -> minAppVersion` in `versions.json`, so the tag and the manifest cannot
+drift. `.npmrc` drops npm's `v` prefix because Obsidian resolves versions by bare tag name.
+
+The rest is [`.github/workflows/release.yml`](.github/workflows/release.yml): it tests, builds,
+and creates a release carrying `main.js`, `manifest.json` and `styles.css` as three separate
+assets — the layout BRAT downloads by name. It refuses to publish when `manifest.json`
+disagrees with the tag. There are no secrets to configure; the workflow's automatic
+`GITHUB_TOKEN` plus `permissions: contents: write` is all it needs.
 
 ### How it works
 
