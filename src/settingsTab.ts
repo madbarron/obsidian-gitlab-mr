@@ -28,9 +28,9 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 				text
 					.setPlaceholder("https://gitlab.com")
 					.setValue(this.plugin.settings.baseUrl)
-					.onChange(async (value) => {
+					.onChange((value) => {
 						this.plugin.settings.baseUrl = value;
-						await this.plugin.applySettings();
+						this.plugin.applySettingsSoon();
 					}),
 			);
 
@@ -43,9 +43,9 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 				text
 					.setPlaceholder("org/group")
 					.setValue(this.plugin.settings.groupBase)
-					.onChange(async (value) => {
+					.onChange((value) => {
 						this.plugin.settings.groupBase = value;
-						await this.plugin.applySettings();
+						this.plugin.applySettingsSoon();
 					}),
 			);
 
@@ -60,9 +60,9 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 				text
 					.setPlaceholder("glpat-…")
 					.setValue(this.plugin.settings.token)
-					.onChange(async (value) => {
+					.onChange((value) => {
 						this.plugin.settings.token = value;
-						await this.plugin.applySettings();
+						this.plugin.applySettingsSoon();
 					});
 			});
 
@@ -81,7 +81,7 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.renderInLivePreview)
 					.onChange(async (value) => {
 						this.plugin.settings.renderInLivePreview = value;
-						await this.plugin.applySettings();
+						await this.plugin.applyDisplaySettings();
 					}),
 			);
 
@@ -90,7 +90,7 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.showTitle)
 				.onChange(async (value) => {
 					this.plugin.settings.showTitle = value;
-					await this.plugin.applySettings();
+					await this.plugin.applyDisplaySettings();
 				}),
 		);
 
@@ -104,7 +104,7 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.maxTitleLength)
 					.onChange(async (value) => {
 						this.plugin.settings.maxTitleLength = value;
-						await this.plugin.applySettings();
+						await this.plugin.applyDisplaySettings();
 					}),
 			);
 
@@ -116,7 +116,7 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.showFullProjectPath)
 					.onChange(async (value) => {
 						this.plugin.settings.showFullProjectPath = value;
-						await this.plugin.applySettings();
+						await this.plugin.applyDisplaySettings();
 					}),
 			);
 
@@ -127,7 +127,7 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.showPipeline)
 					.onChange(async (value) => {
 						this.plugin.settings.showPipeline = value;
-						await this.plugin.applySettings();
+						await this.plugin.applyDisplaySettings();
 					}),
 			);
 
@@ -136,7 +136,7 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.showReviewers)
 				.onChange(async (value) => {
 					this.plugin.settings.showReviewers = value;
-					await this.plugin.applySettings();
+					await this.plugin.applyDisplaySettings();
 				}),
 		);
 
@@ -150,7 +150,7 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.showAuthor)
 					.onChange(async (value) => {
 						this.plugin.settings.showAuthor = value;
-						await this.plugin.applySettings();
+						await this.plugin.applyDisplaySettings();
 					}),
 			);
 
@@ -168,7 +168,7 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.cacheTtlMinutes)
 					.onChange(async (value) => {
 						this.plugin.settings.cacheTtlMinutes = value;
-						await this.plugin.applySettings();
+						await this.plugin.applyDisplaySettings();
 					}),
 			);
 	}
@@ -189,7 +189,7 @@ export class GitLabMrSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.enableMergeButton)
 					.onChange(async (value) => {
 						this.plugin.settings.enableMergeButton = value;
-						await this.plugin.applySettings();
+						await this.plugin.applyDisplaySettings();
 					}),
 			);
 	}

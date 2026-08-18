@@ -25,6 +25,9 @@ export default class GitLabMrPlugin extends Plugin {
 	/** Settings fire on every keystroke; only probe once typing settles. */
 	private queueIdentityRefresh = debounce(() => void this.refreshIdentity(), 1200, true);
 
+	/** Free-text settings fire per keystroke; coalesce the persist + rerender + refetch. */
+	private queueApplySettings = debounce(() => void this.applySettings(), 600, false);
+
 	async onload(): Promise<void> {
 		await this.loadSettings();
 		this.store = new MrStore(this);
@@ -88,12 +91,36 @@ export default class GitLabMrPlugin extends Plugin {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
 
-	/** Persist, drop cached data that may now be wrong, and re-render open notes. */
+	/**
+	 * For text inputs: the caller updates settings in memory synchronously, and this commits
+	 * the expensive persist + rerender + refetch once typing settles. Keeps a burst of
+	 * keystrokes from clearing the cache and firing requests with a half-typed token.
+	 */
+	applySettingsSoon(): void {
+		this.queueApplySettings();
+	}
+
+	/**
+	 * Persist a change that affects what we fetch (base URL, group base, token): drop cached
+	 * data that may now be wrong, re-render, and re-probe the identity.
+	 */
 	async applySettings(): Promise<void> {
 		await this.saveData(this.settings);
 		this.store.invalidateAll();
 		this.rerender();
 		this.queueIdentityRefresh();
+	}
+
+	/**
+	 * Persist a cosmetic change (display toggles, title length, cache duration) and repaint
+	 * open notes. The cached merge request data is still valid, so `repaint()` rebuilds each
+	 * chip from it with the new settings without refetching; `rerender()` then handles the
+	 * one toggle that adds or removes chips entirely (Render while editing).
+	 */
+	async applyDisplaySettings(): Promise<void> {
+		await this.saveData(this.settings);
+		this.store.repaint();
+		this.rerender();
 	}
 
 	/**
