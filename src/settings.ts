@@ -31,6 +31,8 @@ export const DEFAULT_SETTINGS: GitLabMrSettings = {
 	showPipeline: true,
 	showReviewers: true,
 	showAuthor: true,
-	enableMergeButton: true,
+	// Off by default; the merge button setting stays disabled until a token with the api scope
+	// is confirmed, at which point the user opts in.
+	enableMergeButton: false,
 	identity: UNKNOWN_IDENTITY,
 };

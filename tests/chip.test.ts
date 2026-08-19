@@ -220,30 +220,41 @@ describe("chip — merge button", () => {
 		canMerge: true,
 	};
 
+	// The button is off by default now, so these tests turn it on to exercise the real gate.
+	const renderMine = (
+		patch: Partial<MrData> = {},
+		overrides: Partial<typeof DEFAULT_SETTINGS> = {},
+	) => renderData({ ...mine, ...patch }, { enableMergeButton: true, ...overrides });
+
 	it("appears on my own mergeable merge request", () => {
-		const button = renderData(mine).querySelector("button.gl-mr-merge");
+		const button = renderMine().querySelector("button.gl-mr-merge");
 		expect(button?.textContent).toBe("Merge");
 		expect(button?.getAttribute("title")).toBe("Merge into main");
 	});
 
 	it("asks for confirmation instead of merging on click", () => {
 		merged.length = 0;
-		const button = renderData(mine).querySelector("button.gl-mr-merge") as HTMLButtonElement;
+		const button = renderMine().querySelector("button.gl-mr-merge") as HTMLButtonElement;
 		button.click();
 		// The chip only ever requests a merge; MergeConfirmModal is what talks to GitLab.
 		expect(merged).toHaveLength(1);
 		expect(merged[0].iid).toBe("231");
 	});
 
+	it("is off by default until enabled in settings", () => {
+		const chip = renderData(mine);
+		expect(chip.querySelector("button.gl-mr-merge")).toBeNull();
+	});
+
 	it("is hidden when the token cannot write", () => {
-		const chip = renderData(mine, {
+		const chip = renderMine({}, {
 			identity: { username: ME, canWrite: false, checkedAt: 1 },
 		});
 		expect(chip.querySelector("button.gl-mr-merge")).toBeNull();
 	});
 
 	it("is hidden on someone else's merge request", () => {
-		const chip = renderData({ ...mine, author: { username: "lechuck", name: "Ghost Pirate LeChuck" } });
+		const chip = renderMine({ author: { username: "lechuck", name: "Ghost Pirate LeChuck" } });
 		expect(chip.querySelector("button.gl-mr-merge")).toBeNull();
 	});
 
@@ -257,18 +268,18 @@ describe("chip — merge button", () => {
 			"CHECKING",
 			null,
 		]) {
-			const chip = renderData({ ...mine, detailedMergeStatus: status });
+			const chip = renderMine({ detailedMergeStatus: status });
 			expect(chip.querySelector("button.gl-mr-merge")).toBeNull();
 		}
 	});
 
 	it("is hidden when I lack permission, on drafts, and when closed", () => {
 		expect(
-			renderData({ ...mine, canMerge: false }).querySelector("button.gl-mr-merge"),
+			renderMine({ canMerge: false }).querySelector("button.gl-mr-merge"),
 		).toBeNull();
-		expect(renderData({ ...mine, draft: true }).querySelector("button.gl-mr-merge")).toBeNull();
+		expect(renderMine({ draft: true }).querySelector("button.gl-mr-merge")).toBeNull();
 		expect(
-			renderData({ ...mine, state: "merged" }).querySelector("button.gl-mr-merge"),
+			renderMine({ state: "merged" }).querySelector("button.gl-mr-merge"),
 		).toBeNull();
 	});
 

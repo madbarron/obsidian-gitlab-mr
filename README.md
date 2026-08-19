@@ -100,7 +100,7 @@ Click a chip to open the merge request. **Shift+click** forces a refresh. There 
 | Show title / max length            | on / 60              | Titles truncate with an ellipsis                              |
 | Show full project path             | off                  | `project/231` vs `org/group/project/231`                      |
 | Show pipeline / reviewers / author | on                   |                                                               |
-| Show merge button                  | on                   | Ignored when the token cannot write                           |
+| Show merge button                  | off                  | Disabled until Test connection confirms an `api`-scope token  |
 | Cache duration                     | 5 min                | Active pipelines always use 30s                               |
 
 ### Creating the token

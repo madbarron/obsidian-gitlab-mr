@@ -347,6 +347,21 @@
 }
 
 /* Settings tab */
+
+/* Live sample chip under the Display heading. Non-interactive: it is only a preview. */
+.gl-mr-preview {
+	display: flex;
+	justify-content: center;
+	margin: 0 0 1em;
+	padding: 1em;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m, 6px);
+	background-color: var(--background-primary-alt);
+	overflow-x: auto;
+	pointer-events: none;
+	user-select: none;
+}
+
 .gl-mr-settings-help {
 	margin: 0 0 1em;
 	padding: 0.75em 1em;
