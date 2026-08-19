@@ -1,7 +1,7 @@
 {
   "id": "obsidian-gitlab-mr",
   "name": "GitLab MR",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "minAppVersion": "1.4.0",
   "description": "Render GitLab merge request links as inline status chips: state, unresolved threads, pipeline status and per-reviewer approvals.",
   "author": "Brandon Quinn",
