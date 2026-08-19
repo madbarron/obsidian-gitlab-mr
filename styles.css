@@ -208,10 +208,6 @@
 	font-size: 0.8em;
 	font-weight: 700;
 	letter-spacing: 0.02em;
-	color: var(--text-muted);
-}
-
-.gl-mr-initials {
 	color: var(--gl-gray);
 }
 
@@ -279,7 +275,8 @@
 }
 
 .gl-mr-error-unauthorized .gl-mr-status,
-.gl-mr-error-no-token .gl-mr-status {
+.gl-mr-error-no-token .gl-mr-status,
+.gl-mr-error-rate-limited .gl-mr-status {
 	color: var(--gl-orange);
 	background-color: color-mix(in srgb, var(--gl-orange) 15%, transparent);
 }

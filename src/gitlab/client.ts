@@ -81,6 +81,15 @@ export async function graphqlRequest<T>(
 			`No GraphQL endpoint at ${config.baseUrl}/api/graphql (404). Check the base URL.`,
 		);
 	}
+	if (response.status === 429) {
+		const retry = retryAfterSeconds(response.headers);
+		throw new GitLabApiError(
+			"rate-limited",
+			retry
+				? `GitLab is rate limiting requests. Try again in about ${retry}s.`
+				: "GitLab is rate limiting requests. Try again shortly.",
+		);
+	}
 	if (response.status >= 500) {
 		throw new GitLabApiError("server", `GitLab returned ${response.status}.`);
 	}
@@ -203,6 +212,14 @@ export async function fetchTokenScopes(config: ClientConfig): Promise<string[] |
 	} catch {
 		return null;
 	}
+}
+
+/** Parse a `Retry-After` header (delta-seconds) into a positive integer, or null. */
+function retryAfterSeconds(headers: Record<string, string> | undefined): number | null {
+	const raw = headers?.["retry-after"] ?? headers?.["Retry-After"];
+	if (!raw) return null;
+	const seconds = Number(raw);
+	return Number.isFinite(seconds) && seconds > 0 ? Math.ceil(seconds) : null;
 }
 
 export function errorMessage(error: unknown): string {

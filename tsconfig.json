@@ -10,6 +10,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "lib": ["DOM", "ES2020"],
     "types": ["node"]

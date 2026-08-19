@@ -126,6 +126,7 @@ export type ErrorKind =
 	| "no-token"
 	| "unauthorized"
 	| "not-found"
+	| "rate-limited"
 	| "server"
 	| "network"
 	| "graphql";

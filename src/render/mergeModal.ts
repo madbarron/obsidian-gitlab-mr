@@ -20,6 +20,7 @@ export class MergeConfirmModal extends Modal {
 	private squash: boolean;
 	private removeSourceBranch: boolean;
 	private busy = false;
+	private closed = false;
 	private errorEl: HTMLElement | null = null;
 
 	constructor(
@@ -102,6 +103,9 @@ export class MergeConfirmModal extends Modal {
 	}
 
 	onClose(): void {
+		// A merge may still be in flight if the modal was dismissed with Escape or a click
+		// outside; `closed` stops its continuation from touching the emptied DOM.
+		this.closed = true;
 		this.contentEl.empty();
 	}
 
@@ -114,14 +118,17 @@ export class MergeConfirmModal extends Modal {
 			});
 			const errors = await mergeMergeRequest(this.deps.clientConfig(), input);
 			if (errors.length > 0) {
-				this.showError(errors.join("; "));
+				// The modal may have been dismissed mid-request; only render into it if it's open.
+				if (!this.closed) this.showError(errors.join("; "));
 				return;
 			}
+			// The merge went through, so refresh the chip and notify even if the user closed the
+			// modal — `onMerged` and `Notice` don't touch the modal's DOM.
 			new Notice(`GitLab MR: merged ${label}`);
 			this.deps.onMerged();
 			this.close();
 		} catch (error) {
-			this.showError(errorMessage(error));
+			if (!this.closed) this.showError(errorMessage(error));
 		}
 	}
 

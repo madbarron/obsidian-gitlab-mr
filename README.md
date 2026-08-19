@@ -4,7 +4,7 @@ Renders GitLab merge request links in your notes as compact inline status chips,
 the Jira Issue plugin does for Jira issues.
 
 ```
-Open  GT  monkey-island/231  Find Big Whoop  (2)  ●  ❌LC 💬EM
+Open  GT  monkey-island/231  Find Big Whoop  (2)  ●  ❗LC 💬EM
 Open      monkey-island/88   Defeat the Sword Master  ●  ✅SM       [Merge]
 ```
 

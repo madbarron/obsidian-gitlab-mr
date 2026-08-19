@@ -103,6 +103,21 @@ export function truncate(text: string, max: number): string {
 	return `${text.slice(0, max - 1).trimEnd()}…`;
 }
 
+/**
+ * Only `http`/`https` URLs are safe to put in an `href` or hand to `window.open`. A
+ * compromised or misconfigured GitLab instance could return a `javascript:` `webUrl`, which
+ * would otherwise run on middle-click or via `window.open`. Returns null for anything else.
+ */
+export function safeUrl(url: string | null | undefined): string | null {
+	if (!url) return null;
+	try {
+		const protocol = new URL(url).protocol;
+		return protocol === "http:" || protocol === "https:" ? url : null;
+	} catch {
+		return null;
+	}
+}
+
 /** `org/group/project` -> `project`. */
 export function shortProject(fullPath: string): string {
 	const segments = fullPath.split("/").filter(Boolean);

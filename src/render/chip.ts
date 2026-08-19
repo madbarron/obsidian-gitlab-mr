@@ -5,11 +5,12 @@ import {
 	pipelineTooltip,
 	refLabel,
 	reviewView,
+	safeUrl,
 	shouldShowAuthor,
 	statusView,
 	truncate,
 } from "../format";
-import { mrWebUrl } from "../parser";
+import { mrWebUrl, normalizeBaseUrl } from "../parser";
 import type { MrStore } from "../cache";
 import type { GitLabMrSettings } from "../settings";
 import type { MrData, MrEntry, MrError, MrRef } from "../types";
@@ -26,6 +27,7 @@ const ERROR_VIEWS: Record<MrError["kind"], { glyph: string; label: string }> = {
 	"no-token": { glyph: "⚙️", label: "set token" },
 	unauthorized: { glyph: "🔒", label: "auth" },
 	"not-found": { glyph: "⚠️", label: "not found" },
+	"rate-limited": { glyph: "⏳", label: "rate limited" },
 	server: { glyph: "⚠️", label: "gitlab error" },
 	network: { glyph: "↻", label: "offline" },
 	graphql: { glyph: "⚠️", label: "error" },
@@ -55,6 +57,11 @@ export class Chip {
 
 	private get fallbackUrl(): string {
 		return mrWebUrl(this.ref, this.host.settings.baseUrl);
+	}
+
+	/** A safe external URL: the primary when it is http(s), else the constructed fallback. */
+	private safeLink(primary: string | null | undefined): string {
+		return safeUrl(primary) ?? safeUrl(this.fallbackUrl) ?? "#";
 	}
 
 	private paint(): void {
@@ -102,7 +109,8 @@ export class Chip {
 		const status = statusView(data.state, data.draft);
 		this.el.addClass(`gl-mr-state-${status.modifier}`);
 
-		const main = this.el.createEl("a", { cls: "gl-mr-main", href: data.webUrl || this.fallbackUrl });
+		const mainUrl = this.safeLink(data.webUrl);
+		const main = this.el.createEl("a", { cls: "gl-mr-main", href: mainUrl });
 		main.setAttribute(
 			"title",
 			`${data.fullPath}!${data.iid} — ${data.title}\n${status.label}\nShift+click to refresh`,
@@ -138,14 +146,15 @@ export class Chip {
 		main.addEventListener("click", (event) => {
 			event.preventDefault();
 			if (event.shiftKey) this.host.store.refresh(this.ref);
-			else this.openExternal(data.webUrl || this.fallbackUrl);
+			else this.openExternal(mainUrl);
 		});
 
 		if (settings.showPipeline && data.pipeline) {
 			const view = pipelineDot(data.pipeline.status);
-			const url = data.pipeline.detailsPath
-				? `${settings.baseUrl.replace(/\/+$/, "")}${data.pipeline.detailsPath}`
+			const rawUrl = data.pipeline.detailsPath
+				? `${normalizeBaseUrl(settings.baseUrl)}${data.pipeline.detailsPath}`
 				: `${data.webUrl || this.fallbackUrl}/pipelines`;
+			const url = this.safeLink(rawUrl);
 			const tooltip = pipelineTooltip(data.pipeline);
 			const pipeline = this.el.createEl("a", {
 				cls: `gl-mr-pipeline gl-mr-pipe-${view.modifier}`,
@@ -193,6 +202,7 @@ export class Chip {
 	}
 
 	private openExternal(url: string): void {
-		window.open(url, "_blank");
+		const safe = safeUrl(url);
+		if (safe) window.open(safe, "_blank", "noopener,noreferrer");
 	}
 }

@@ -6,6 +6,7 @@ import {
 	pipelineTooltip,
 	refLabel,
 	reviewView,
+	safeUrl,
 	shortProject,
 	shouldShowAuthor,
 	statusView,
@@ -214,6 +215,31 @@ describe("canOfferMerge", () => {
 		expect(canOfferMerge({ ...mine, canMerge: false } as MrData, { enabled: true, identity })).toBe(
 			false,
 		);
+	});
+});
+
+describe("safeUrl", () => {
+	it("passes http and https URLs through", () => {
+		expect(safeUrl("https://gitlab.com/a/b/-/merge_requests/1")).toBe(
+			"https://gitlab.com/a/b/-/merge_requests/1",
+		);
+		expect(safeUrl("http://localhost/x")).toBe("http://localhost/x");
+	});
+
+	it("rejects javascript: and other dangerous schemes", () => {
+		expect(safeUrl("javascript:alert(1)")).toBeNull();
+		expect(safeUrl("data:text/html,<script>alert(1)</script>")).toBeNull();
+		expect(safeUrl("file:///etc/passwd")).toBeNull();
+		expect(safeUrl("vbscript:msgbox(1)")).toBeNull();
+	});
+
+	it("rejects relative or unparseable values", () => {
+		expect(safeUrl("#")).toBeNull();
+		expect(safeUrl("/a/b/-/merge_requests/1")).toBeNull();
+		expect(safeUrl("not a url")).toBeNull();
+		expect(safeUrl("")).toBeNull();
+		expect(safeUrl(null)).toBeNull();
+		expect(safeUrl(undefined)).toBeNull();
 	});
 });
 
